@@ -1,0 +1,282 @@
+@startuml MP3Player_Class_Diagram
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam packageStyle rectangle
+
+package "Core Domain" {
+    abstract class MediaPlayer {
+        #currentTrack: shared_ptr<Track>
+        #isPlaying: bool
+        #isPaused: bool
+        #volume: double
+        #currentPosition: double
+        +{abstract} loadTrack(track: shared_ptr<Track>): bool
+        +{abstract} play(): bool
+        +{abstract} pause(): bool
+        +{abstract} stop(): bool
+        +{abstract} seek(position: double): bool
+        +setVolume(vol: double): void
+        +getVolume(): double
+        +getCurrentPosition(): double
+        +playFromBeginning(): bool
+    }
+
+    class Track {
+        -filePath: string
+        -title: string
+        -artist: string
+        -album: string
+        -genre: string
+        -year: int
+        -duration: chrono::seconds
+        -fileSize: size_t
+        -format: string
+        +Track()
+        +Track(path: string)
+        +getTitle(): string
+        +getArtist(): string
+        +setTitle(title: string): void
+        +setArtist(artist: string): void
+        +operator==(other: Track): bool
+        +operator<(other: Track): bool
+        +{static} createFromFile(path: string): shared_ptr<Track>
+        +isValid(): bool
+    }
+
+    class MP3Player {
+        -equalizer: unique_ptr<Equalizer>
+        -errorCallback: function<void(string)>
+        -positionCallback: function<void(double)>
+        -audioEngine: void*
+        +MP3Player()
+        +MP3Player(eq: unique_ptr<Equalizer>)
+        +loadTrack(track: shared_ptr<Track>): bool
+        +play(): bool
+        +pause(): bool
+        +stop(): bool
+        +seek(position: double): bool
+        +getEqualizer(): Equalizer*
+        +setErrorCallback(callback): void
+        -{static} isFormatSupported(format: string): bool
+    }
+
+    class Equalizer {
+        -bandGains: array<double, 3>
+        -presetName: string
+        -enabled: bool
+        -{static} presets: map<string, array<double, 3>>
+        +Equalizer()
+        +Equalizer(low: double, mid: double, high: double)
+        +setBandGain(band: Band, gain: double): void
+        +getBandGain(band: Band): double
+        +applyPreset(preset: string): void
+        +setEnabled(enable: bool): void
+        +{static} createFlat(): unique_ptr<Equalizer>
+        +{static} createRock(): unique_ptr<Equalizer>
+        +operator==(other: Equalizer): bool
+    }
+
+    enum Band {
+        LOW = 0
+        MID = 1
+        HIGH = 2
+    }
+}
+
+package "Collection Management" {
+    class Playlist {
+        -name: string
+        -tracks: vector<shared_ptr<Track>>
+        -currentIndex: size_t
+        -shuffleMode: bool
+        -repeatMode: bool
+        -randomGenerator: mt19937
+        -shuffleOrder: vector<size_t>
+        +Playlist()
+        +Playlist(name: string)
+        +addTrack(track: shared_ptr<Track>): void
+        +removeTrack(index: size_t): bool
+        +getTrack(index: size_t): shared_ptr<Track>
+        +getCurrentTrack(): shared_ptr<Track>
+        +next(): shared_ptr<Track>
+        +previous(): shared_ptr<Track>
+        +operator[](index: size_t): shared_ptr<Track>
+        +operator+=(track: shared_ptr<Track>): Playlist&
+        +setShuffleMode(enabled: bool): void
+        +sortByTitle(): void
+        +searchByArtist(query: string): vector<shared_ptr<Track>>
+        +size(): size_t
+        +getTotalDuration(): chrono::seconds
+    }
+}
+
+package "Persistence" {
+    abstract class PlaylistPersistence {
+        +{abstract} savePlaylist(playlist: Playlist, path: string): bool
+        +{abstract} loadPlaylist(path: string): optional<Playlist>
+        +{abstract} deletePlaylist(path: string): bool
+        +{abstract} listPlaylists(directory: string): vector<string>
+        +{abstract} isValidFormat(path: string): bool
+        +{abstract} getDefaultExtension(): string
+    }
+
+    class JsonPlaylistPersistence {
+        -formatVersion: string
+        -prettyPrint: bool
+        +JsonPlaylistPersistence()
+        +JsonPlaylistPersistence(prettyFormat: bool)
+        +savePlaylist(playlist: Playlist, path: string): bool
+        +loadPlaylist(path: string): optional<Playlist>
+        +deletePlaylist(path: string): bool
+        +listPlaylists(directory: string): vector<string>
+        +isValidFormat(path: string): bool
+        +getDefaultExtension(): string
+        +setPrettyPrint(enabled: bool): void
+        -serializeTrack(track: Track): string
+        -deserializeTrack(json: string): optional<Track>
+    }
+
+    class JsonException {
+        -message: string
+        +JsonException(msg: string)
+        +what(): char*
+    }
+
+    class FileException {
+        +FileException(filePath: string)
+    }
+
+    class ParseException {
+        +ParseException(details: string)
+    }
+}
+
+package "File Management" {
+    class "DirectoryScanner<FileFilter>" as DirectoryScanner {
+        -supportedExtensions: set<string>
+        -filter: FileFilter
+        -recursive: bool
+        -maxDepth: size_t
+        -progressCallback: function<void(string)>
+        +DirectoryScanner()
+        +DirectoryScanner(extensions: set<string>)
+        +setSupportedExtensions(extensions: set<string>): void
+        +setRecursive(enable: bool, maxDepth: size_t): void
+        +scanDirectory(path: string): vector<string>
+        +scanForTracks(path: string): vector<shared_ptr<Track>>
+        +scanForTracksAsync(path: string): future<vector<shared_ptr<Track>>>
+        +isSupported(path: string): bool
+        -scanRecursive(path: string, results: vector<string>&, depth: size_t): void
+    }
+
+    class ScanException {
+        -message: string
+        +ScanException(msg: string)
+        +what(): char*
+    }
+}
+
+package "Application Layer" {
+    class MP3PlayerApp {
+        -player: unique_ptr<MP3Player>
+        -currentPlaylist: unique_ptr<Playlist>
+        -persistence: unique_ptr<PlaylistPersistence>
+        -scanner: unique_ptr<MediaScanner>
+        -loadedPlaylists: vector<unique_ptr<Playlist>>
+        -applicationPath: string
+        -playlistsDirectory: string
+        -trackChangedCallback: function<void(shared_ptr<Track>)>
+        -errorCallback: function<void(string)>
+        -positionCallback: function<void(double)>
+        +MP3PlayerApp()
+        +MP3PlayerApp(appPath: string)
+        +initialize(): bool
+        +shutdown(): void
+        +playTrack(track: shared_ptr<Track>): bool
+        +pausePlayback(): bool
+        +stopPlayback(): bool
+        +loadPlaylist(name: string): bool
+        +saveCurrentPlaylist(name: string): bool
+        +addTrackToCurrentPlaylist(path: string): bool
+        +addDirectoryToCurrentPlaylist(path: string): bool
+        +nextTrack(): bool
+        +previousTrack(): bool
+        +getEqualizer(): Equalizer*
+        +setEqualizerPreset(preset: string): void
+        -initializeComponents(): void
+        -setupCallbacks(): void
+    }
+
+    class CLI {
+        -app: unique_ptr<MP3PlayerApp>
+        -commands: map<string, Command>
+        -running: bool
+        -prompt: string
+        +CLI()
+        +CLI(app: unique_ptr<MP3PlayerApp>)
+        +run(): void
+        +processCommand(commandLine: string): void
+        +registerCommand(command: Command): void
+        -cmdPlay(args: vector<string>): void
+        -cmdPause(args: vector<string>): void
+        -cmdPlaylist(args: vector<string>): void
+        -cmdEqualizer(args: vector<string>): void
+        -displayHelp(): void
+        -parseCommand(input: string): vector<string>
+    }
+
+    class Command {
+        +name: string
+        +description: string
+        +usage: string
+        +function: CommandFunction
+        +minArgs: size_t
+        +maxArgs: size_t
+        +Command(name: string, desc: string, usage: string, func: CommandFunction, min: size_t, max: size_t)
+    }
+}
+
+' Inheritance relationships
+MediaPlayer <|-- MP3Player
+PlaylistPersistence <|-- JsonPlaylistPersistence
+JsonException <|-- FileException
+JsonException <|-- ParseException
+std::exception <|-- JsonException
+std::exception <|-- ScanException
+
+' Composition relationships
+MP3Player *-- Equalizer : contains
+Playlist *-- Track : contains many
+MP3PlayerApp *-- MP3Player : aggregates
+MP3PlayerApp *-- Playlist : aggregates
+MP3PlayerApp *-- PlaylistPersistence : aggregates
+MP3PlayerApp *-- DirectoryScanner : aggregates
+CLI *-- MP3PlayerApp : uses
+CLI *-- Command : contains many
+
+' Associations
+Equalizer ..> Band : uses
+DirectoryScanner ..> Track : creates
+JsonPlaylistPersistence ..> Playlist : serializes
+JsonPlaylistPersistence ..> Track : serializes
+
+' Dependencies
+MP3Player ..> Track : uses
+Playlist ..> Track : manages
+CLI ..> Playlist : manipulates
+
+note top of MediaPlayer : Abstract base class\nDefines interface for\nall media players
+
+note right of MP3Player : Concrete implementation\nHandles MP3 playback\nContains equalizer
+
+note bottom of Playlist : Collection management\nSupports shuffle/repeat\nIterator compatible
+
+note left of JsonPlaylistPersistence : JSON serialization\nException handling\nFile I/O management
+
+note top of DirectoryScanner : Template class\nAsync scanning support\nConfigurable filtering
+
+note right of MP3PlayerApp : Application facade\nCoordinates all components\nCallback management
+
+@enduml
