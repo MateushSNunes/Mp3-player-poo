@@ -1,4 +1,4 @@
-# TSP Route Optimizer - C++ POO Project
+# MP3 Player - C++ POO Project
 
 Projeto: MP3 Player
 
