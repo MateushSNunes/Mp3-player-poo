@@ -1,0 +1,20 @@
+# Comandos para conectar ao GitHub (execute após criar repositório)
+
+# Substitua SEU_USUARIO pelo seu nome de usuário do GitHub
+# Substitua a URL pela URL real do seu repositório
+
+# 1. Adicionar repositório remoto
+git remote add origin https://github.com/SEU_USUARIO/POOMP3-Player.git
+
+# 2. Renomear branch principal para main (padrão moderno)
+git branch -M main
+
+# 3. Fazer push inicial
+git push -u origin main
+
+# 4. Verificar se foi enviado com sucesso
+git remote -v
+
+# 5. Criar tag para Etapa 1
+git tag -a "etapa1" -m "Etapa 1: Arquitetura e Headers Completos - 25/09/2025"
+git push origin etapa1
