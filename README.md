@@ -1,3 +1,10 @@
+TSP Route Optimizer - C++ POO Project
+Projeto: Otimização de Rotas (Problema do Caixeiro Viajante)
+Disciplina: Programação Orientada a Objetos (C++)
+Universidade: UFPB - Centro de Informática
+Autor: Erick Batista da Silva
+Matrícula: [Sua matrícula]
+
 # MP3 Player - Programação Orientada a Objetos
 
 ![C++](https://img.shields.io/badge/C++-17-blue.svg)
