@@ -1,9 +1,13 @@
 # TSP Route Optimizer - C++ POO Project
 
 Projeto: MP3 Player
+
 Disciplina: Programação Orientada a Objetos (C++)
+
 Universidade: UFPB - Centro de Informática
+
 Autor: Matheus da Silva Nunes
+
 Matrícula: 20240011024
 
 # MP3 Player - Programação Orientada a Objetos
