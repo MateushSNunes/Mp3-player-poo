@@ -1,9 +1,9 @@
-TSP Route Optimizer - C++ POO Project
-Projeto: Otimização de Rotas (Problema do Caixeiro Viajante)
+#TSP Route Optimizer - C++ POO Project
+Projeto: MP3 Player
 Disciplina: Programação Orientada a Objetos (C++)
 Universidade: UFPB - Centro de Informática
-Autor: Erick Batista da Silva
-Matrícula: [Sua matrícula]
+Autor: Matheus da Silva Nunes
+Matrícula: 20240011024
 
 # MP3 Player - Programação Orientada a Objetos
 
