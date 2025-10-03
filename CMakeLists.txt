@@ -52,18 +52,18 @@ set(HEADER_FILES
     include/CLI.h
 )
 
-# Futuros arquivos fonte (comentados por enquanto)
+# Arquivos fonte implementados
 set(SOURCE_FILES
-    # src/MediaPlayer.cpp
-    # src/Track.cpp
-    # src/MP3Player.cpp
-    # src/Playlist.cpp
-    # src/Equalizer.cpp
-    # src/PlaylistPersistence.cpp
-    # src/DirectoryScanner.cpp
-    # src/MP3PlayerApp.cpp
-    # src/CLI.cpp
-    # src/main.cpp
+    src/MediaPlayer.cpp
+    src/Track.cpp
+    src/MP3Player.cpp
+    src/Playlist.cpp
+    src/Equalizer.cpp
+    src/PlaylistPersistence.cpp
+    src/DirectoryScanner.cpp
+    src/MP3PlayerApp.cpp
+    src/CLI.cpp
+    src/main.cpp
 )
 
 # Criar biblioteca header-only para verificação de compilação
@@ -80,19 +80,34 @@ add_executable(header_test
 )
 target_link_libraries(header_test mp3player_headers)
 
-# Futuro executável principal (comentado por enquanto)
-# add_executable(mp3player ${SOURCE_FILES})
-# target_link_libraries(mp3player 
-#     mp3player_headers
-#     Threads::Threads
-# )
+# Executável principal
+add_executable(mp3player ${SOURCE_FILES})
+target_include_directories(mp3player PRIVATE include)
+target_compile_features(mp3player PRIVATE cxx_std_17)
+target_link_libraries(mp3player 
+    Threads::Threads
+)
+
+# Configurações específicas por plataforma
+if(WIN32)
+    target_compile_options(mp3player PRIVATE /utf-8)
+    set_target_properties(mp3player PROPERTIES
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
+endif()
+
+# Configurações para Debug/Release
+set_target_properties(mp3player PROPERTIES
+    DEBUG_POSTFIX "_d"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
 # if(Qt6_FOUND)
 #     target_link_libraries(mp3player Qt6::Core Qt6::Widgets Qt6::Multimedia)
 # endif()
 
 # Configuração de instalação
-install(TARGETS mp3player_headers
+install(TARGETS mp3player mp3player_headers
     EXPORT MP3PlayerTargets
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib

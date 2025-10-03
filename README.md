@@ -1,5 +1,29 @@
 # MP3 Player - C++ POO Project
 
+## 🚀 **INSTRUÇÕES PARA EXECUÇÃO DOS TESTES CLI**
+
+### **Compilação:**
+```bash
+cd "e:\POO\POOMP3"
+g++ -std=c++17 -Wall -Wextra -Iinclude src/Track.cpp src/Playlist.cpp src/MediaPlayer.cpp cli_test.cpp -o cli_test.exe
+```
+
+### **Execução:**
+```bash
+.\cli_test.exe
+```
+
+### **Resultado Esperado:**
+O programa demonstra todas as operações-chave do MP3 Player:
+- ✅ Criação e configuração de tracks
+- ✅ Gerenciamento de playlists
+- ✅ Navegação entre músicas
+- ✅ Busca e filtros
+- ✅ Uso de smart pointers e STL
+- ✅ Todos os conceitos OOP implementados
+
+---
+
 Projeto: MP3 Player
 
 Disciplina: Programação Orientada a Objetos (C++)
