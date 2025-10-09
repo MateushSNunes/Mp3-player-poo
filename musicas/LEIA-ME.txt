@@ -1,0 +1,33 @@
+===============================================
+   DIRETORIO DE MUSICAS - MP3 PLAYER POO
+===============================================
+
+ENDERECO DA PASTA:
+  e:\POO\POOMP3\musicas
+
+COMO USAR:
+  1. Copie seus arquivos MP3 para esta pasta
+  2. Execute o mp3_player.exe
+  3. Escolha opcao 1 (Scan Directory)
+  4. Confirme o diretorio padrao (y)
+  5. O programa ira encontrar todos os arquivos MP3
+
+FORMATOS ACEITOS:
+  - .mp3
+  - .MP3
+
+OBSERVACOES:
+  - Voce pode criar subpastas
+  - O scanner procura ate 3 niveis de profundidade
+  - Nomes de arquivos serao usados como titulos
+  - Artista e Album aparecerao como "Unknown"
+
+EXEMPLO:
+  musicas/
+    ├── rock/
+    │   ├── musica1.mp3
+    │   └── musica2.mp3
+    └── pop/
+        └── musica3.mp3
+
+===============================================

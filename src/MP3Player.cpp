@@ -1,6 +1,8 @@
 #include "MP3Player.h"
 #include <iostream>
 #include <algorithm>
+#include <cstdlib>
+#include <filesystem>
 
 MP3Player::MP3Player() : audioEngine(nullptr) {
     equalizer = Equalizer::createFlat();
@@ -63,8 +65,32 @@ bool MP3Player::play() {
     isPlaying = true;
     isPaused = false;
     
-    std::cout << "▶️ Reproduzindo: " << currentTrack->getDisplayName() 
+    std::cout << "[PLAY] Reproduzindo: " << currentTrack->getDisplayName() 
               << " [" << currentTrack->getDurationString() << "]" << std::endl;
+    
+    // Tentar tocar o arquivo MP3 real com Windows Media Player
+    std::string filePath = currentTrack->getFilePath();
+    
+    if (!filePath.empty() && std::filesystem::exists(filePath)) {
+        std::cout << "[INFO] Abrindo arquivo de audio: " << filePath << std::endl;
+        
+        // Construir comando para Windows Media Player
+        std::string command = "start wmplayer \"" + filePath + "\"";
+        
+        // Executar comando
+        int result = std::system(command.c_str());
+        
+        if (result == 0) {
+            std::cout << "[OK] Windows Media Player iniciado!\n";
+        } else {
+            std::cout << "[WARNING] Falha ao iniciar player. Tentando player padrao...\n";
+            // Tentar com player padrão do Windows
+            command = "start \"\" \"" + filePath + "\"";
+            std::system(command.c_str());
+        }
+    } else {
+        std::cout << "[SIMULATION] Arquivo nao encontrado, simulando reproducao...\n";
+    }
     
     // Simular progresso da reprodução
     notifyPositionChanged(currentPosition);
@@ -80,7 +106,7 @@ bool MP3Player::pause() {
     isPaused = true;
     isPlaying = false;
     
-    std::cout << "⏸️ Pausado em " << static_cast<int>(currentPosition) << "s" << std::endl;
+    std::cout << "[PAUSE] Pausado em " << static_cast<int>(currentPosition) << "s" << std::endl;
     return true;
 }
 
@@ -93,7 +119,7 @@ bool MP3Player::stop() {
     isPaused = false;
     currentPosition = 0.0;
     
-    std::cout << "⏹️ Parado" << std::endl;
+    std::cout << "[STOP] Parado" << std::endl;
     return true;
 }
 
@@ -110,7 +136,7 @@ bool MP3Player::seek(double position) {
     currentPosition = position;
     notifyPositionChanged(currentPosition);
     
-    std::cout << "⏭️ Posição: " << static_cast<int>(position) << "s" << std::endl;
+    std::cout << "[SEEK] Posição: " << static_cast<int>(position) << "s" << std::endl;
     return true;
 }
 
@@ -121,7 +147,7 @@ Equalizer* MP3Player::getEqualizer() const {
 void MP3Player::setEqualizer(std::unique_ptr<Equalizer> newEqualizer) {
     if (newEqualizer) {
         equalizer = std::move(newEqualizer);
-        std::cout << "🎛️ Equalizer atualizado: " << equalizer->toString() << std::endl;
+        std::cout << "[EQ] Equalizer atualizado: " << equalizer->toString() << std::endl;
     }
 }
 
@@ -147,7 +173,7 @@ void MP3Player::notifyError(const std::string& message) {
     if (errorCallback) {
         errorCallback(message);
     } else {
-        std::cerr << "❌ Erro: " << message << std::endl;
+        std::cerr << "[ERROR] Erro: " << message << std::endl;
     }
 }
 

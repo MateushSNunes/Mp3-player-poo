@@ -1,0 +1,27 @@
+COMO TESTAR O MP3 PLAYER COM AUDIO REAL:
+
+1. ADICIONE ARQUIVOS MP3 REAIS:
+   - Copie seus arquivos .mp3 para esta pasta: e:\POO\POOMP3\musicas
+   - Exemplo: musica1.mp3, musica2.mp3, etc.
+
+2. EXECUTE O PLAYER:
+   .\mp3_player.exe
+
+3. SIGA OS PASSOS:
+   - Escolha opcao 1 (Scan Directory)
+   - Confirme o diretorio padrao (y)
+   - Crie uma playlist com as musicas encontradas (y)
+   - Escolha opcao 2 (Playback Controls)
+   - Escolha opcao 1 (Play)
+   
+4. O QUE ACONTECE:
+   - O programa vai abrir o Windows Media Player
+   - O arquivo MP3 sera tocado automaticamente
+   - Voce pode controlar o volume e reproducao pelo WMP
+
+IMPORTANTE:
+- Os arquivos precisam ser MP3 REAIS (nao vazios)
+- Se o Windows Media Player nao abrir, o sistema tentara o player padrao
+- Arquivos vazios ou corrompidos nao tocam
+
+Remova o arquivo exemplo.mp3 (esta vazio) e adicione MP3s reais!

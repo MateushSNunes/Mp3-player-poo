@@ -100,6 +100,10 @@ void Track::setDuration(std::chrono::seconds newDuration) {
     duration = newDuration;
 }
 
+void Track::setFilePath(const std::string& path) {
+    filePath = path;
+}
+
 bool Track::operator==(const Track& other) const {
     return filePath == other.filePath;
 }

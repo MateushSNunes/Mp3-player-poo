@@ -60,6 +60,7 @@ public:
     void setGenre(const std::string& newGenre);
     void setYear(int newYear);
     void setDuration(std::chrono::seconds newDuration);
+    void setFilePath(const std::string& path);
 
     // Sobrecarga de operadores para comparação e ordenação
     bool operator==(const Track& other) const;

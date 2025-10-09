@@ -730,11 +730,11 @@ void CLI::showDetailedHelp(const std::string& command) {
 }
 
 void CLI::showSuccess(const std::string& message) {
-    std::cout << "✓ " << message << "\n";
+    std::cout << "[OK] " << message << "\n";
 }
 
 void CLI::showError(const std::string& message) {
-    std::cout << "✗ ERRO: " << message << "\n";
+    std::cout << "[ERROR] " << message << "\n";
 }
 
 void CLI::showInfo(const std::string& message) {

@@ -172,11 +172,10 @@ void DirectoryScanner<FileFilter>::notifyProgress(const std::string& currentFile
     }
 }
 
-// Instanciações explícitas dos templates mais comuns
-template class DirectoryScanner<>;
+// Instanciacao explicita do template
 template class DirectoryScanner<std::function<bool(const std::string&)>>;
 
-// Implementação das funções factory
+// Implementacao das funcoes factory
 std::unique_ptr<MediaScanner> createMP3Scanner() {
     return std::make_unique<MediaScanner>(std::set<std::string>{".mp3"});
 }
